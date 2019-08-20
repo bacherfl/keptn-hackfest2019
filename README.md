@@ -35,7 +35,7 @@ Google additional tools
 * gcloud - [CLI for Google Cloud](https://cloud.google.com/sdk/gcloud/)
 
 Azure additional tools
-* az - [CLI for Google Cloud](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+* az - [CLI for Azure](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
 #Amazon additional tools
 #* ekscli - [CLI Provisioning EKS cluster](https://github.com/weaveworks/eksctl)
