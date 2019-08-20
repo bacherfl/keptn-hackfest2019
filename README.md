@@ -19,7 +19,7 @@ In this workshop, you will get hands-on experience with the open source framewor
 
 Keptn expects all the code repos and project files to be in the same GitHub Organization. So create a github new github organization for the keptn-orders for Keptn to use and for the keptn-orders application repos to be forked.  See details in the [github docs](https://github.com/organizations/new)
 
-Suggested gihub organization name: ```<your last name>-keptn-orders-<cloud provider>``` for examaple ```jahn-keptn-orders-aks```
+Suggested gihub organization name: ```<your last name>-keptn-hackfest-<cloud provider>``` for example ```bacher-keptn-hackfest-gcloud```
 
 NOTE: If the 'orders-project' repo already exists in your personal github org, there may be errors when you onboard again.  So delete the repo if it exists.
 
