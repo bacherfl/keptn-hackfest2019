@@ -13,7 +13,7 @@ In this workshop, you will get hands-on experience with the open source framewor
 1. Cloud provider account.  Highly recommend to sign up for personal free trial as to have full admin rights and to not cause any issues with your enterprise account. Links to free trials
    * [Google](https://cloud.google.com/free/)
    * [Azure](https://azure.microsoft.com/en-us/free/)
-#   * [Amazon](https://aws.amazon.com/free/)
+   * [Amazon](https://aws.amazon.com/free/)
 
 ## 2. Github Org
 
@@ -37,8 +37,8 @@ Google additional tools
 Azure additional tools
 * az - [CLI for Azure](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
-#Amazon additional tools
-#* ekscli - [CLI Provisioning EKS cluster](https://github.com/weaveworks/eksctl)
-#* aws-iam-authenticator = [Allows kubectl client to work with Amazon EKS via IAM](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html)
-#* aws - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+Amazon additional tools
+* ekscli - [CLI Provisioning EKS cluster](https://github.com/weaveworks/eksctl)
+* aws-iam-authenticator = [Allows kubectl client to work with Amazon EKS via IAM](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html)
+* aws - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 
