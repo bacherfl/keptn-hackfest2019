@@ -1,0 +1,31 @@
+.project
+.DS_Store
+
+# locally clones application repos
+repositories/
+keptn/
+reference/
+installer/
+dynatrace-service/
+
+# credentials file with personal tokens
+creds.json*
+
+# azure provisioning generated file
+aks/parameters.json
+AKS_service_principal.json
+
+# pipeline generated files
+pipelines/gen/*.xml
+pipelines/gen/*.bak
+
+# any misc logs
+*.log
+
+# any misc files part of install
+google-cloud-sdk*
+keptn-linux*
+linux-amd64/
+helm-*-linux-amd64.tar.gz
+*keptn-linux.tar*
+
