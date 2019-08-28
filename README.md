@@ -24,7 +24,7 @@ NOTE: If the 'orders-project' repo already exists in your personal github org, t
 
 ## 3. Tools
 
-The following set of tools are required by the installation scripts and interacting with the environment.  The setup scripts will install these automatically on the bastion host, but below is a listing for reference.
+The following set of tools are required by the installation scripts and interacting with the environment.  The setup scripts will install these automatically on the machine, but below is a listing for reference.
 
 All platforms
 * keptn -[Keptn CLI to manage Keptn projects](https://keptn.sh/docs/0.4.0/reference/cli/)
@@ -35,12 +35,6 @@ Google additional tools
 
 Azure additional tools
 * az - [CLI for Azure](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
-
-# Bastion host setup
-
-See these instructions for provisioning an ubuntu 16.04 LTS host on the targeted cloud provider.  The setup scripts assume this version, so don't adjust this.
-* [Google Compute Engine VM](GOOGLE.md)
-* [Azure Compute Engine VM](AZURE.md)
 
 # Provision Cluster, Install Keptn, and onboard the Orders application
 
@@ -57,18 +51,14 @@ The setup menu should look like this:
 ====================================================
 SETUP MENU
 ====================================================
-1)  Install Prerequisites Tools
-2)  Enter Installation Script Inputs
-3)  Provision Kubernetes cluster
-4)  Install Keptn
-5)  Install Dynatrace
-6)  Fork sockshop Repos
-7)  Setup HA Proxy to Keptn Bridge
+1)  Enter Installation Script Inputs
+2)  Provision Kubernetes cluster
+3)  Install Keptn
+4)  Install Dynatrace
 ----------------------------------------------------
 10) Validate Kubectl
 11) Validate Prerequisite Tools
 ----------------------------------------------------
-20) Show Orders App
 21) Show Keptn
 22) Show Dynatrace
 ----------------------------------------------------
@@ -82,17 +72,7 @@ Please enter your choice or <q> or <return> to exit
 
 NOTE: each script will log the console output into the ```logs/``` subfolder.
 
-## 1) Install Prerequisites Tools
-
-This will install the required unix tools such as kubectl, jq, cloud provider CLI.
-
-At the end if the installation, the script will 
-* call the 'Validate Prerequisite Tools' script that will verify tools setup setup
-* call the cloud provider CLI configure command that will prompt you for account and default values
-
-NOTE: You can re-run both 'Install Prerequisites Tools' or 'Validate Prerequisite Tools' anytime as required.
-
-# 2) Enter Installation Script Inputs
+# 1) Enter Installation Script Inputs
 
 Before you do this step, be prepared with your github credentials, dynatrace tokens, and cloud provider project information available.
 
@@ -116,23 +96,26 @@ Cluster Zone (eg.us-east1-b)           (current: CLUSTER_ZONE_PLACEHOLDER) :
 Cluster Region (eg.us-east1)           (current: CLUSTER_REGION_PLACEHOLDER) :
 ```
 
-## 3) Provision Kubernetes cluster
+## 2 Provision Kubernetes cluster
 
-This will provision a Cluster on the specified cloud deployment type using the platforms CLI. This script will take several minutes to run and you can verify the cluster was created with the the cloud provider console.
+- On GCP, you can create the cluster using the following command:
+  ```
+  gcloud beta container --project $PROJECT clusters create $CLUSTER_NAME --zone $ZONE --no-enable-basic-auth --cluster-version $GKE_VERSION --machine-type "n1-standard-4" --image-type "UBUNTU" --disk-type "pd-standard" --disk-size "100" --metadata disable-legacy-endpoints=true --scopes "https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/service.management.readonly","https://www.googleapis.com/auth/trace.append" --num-nodes "1" --enable-cloud-logging --enable-cloud-monitoring --no-enable-ip-alias --network "projects/$PROJECT/global/networks/default" --subnetwork "projects/$PROJECT/regions/$REGION/subnetworks/default" --addons HorizontalPodAutoscaling,HttpLoadBalancing --no-enable-autoupgrade
+  ```
+- On Azure, please follow the instructions at the [Azure AKS Docs](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal). For the cluster size, select one **B4ms** node.
+
 
 The cluster will take 5-10 minutes to provision.
 
-This script at the end will run the 'Validate Kubectl' script.  
+## 3) Manual Step: Install Keptn
 
-## 4) Manual Step: Install Keptn
-
-To install keptn on your cluster, please execute the following command on your bastion host:
+To install keptn on your cluster, please execute the following command on your machine:
 
 `keptn install -c=creds.json --platform=<deployment_type>`
 
 This will install keptn on your cluster, using the installation details you provided earlier.
 
-## 5) Install Dynatrace
+## 4) Install Dynatrace
 
 This will install the Dynatrace OneAgent Operator into your cluster.  The install will take 3-5 minutes to perform.
 
@@ -142,48 +125,35 @@ NOTE: Internally, this script will perform the following:
 1. run the ```/deploy/scripts/deployDynatraceOn<Platform>.sh``` script in the dynatrace-service folder
 1. run the 'Show Dynatrace' helper script
 
-## 6) Fork carts application repository
+## 5) Manual Step: Fork carts application repository
 
-This will fork the carts application into the github organization you specified when you called 'Enter Installation Script Inputs' step.  
+Go to https://github.com/keptn-sockshop/carts and click on the **Fork** button on the top right corner.
+  1. Select the GitHub organization you use for keptn.
+  1. Clone the forked carts service to your local machine. Please note that you have to use your own GitHub organization.
+  
+    ```console
+      git clone https://github.com/your-github-org/carts.git
+    ```
 
-Internally, this script will:
-1. delete and created a local respositories/ folder
-1. clone the orders application repositories
-1. use the ```hub``` unix git utility to fork the original carts repository
-1. push the carts repository to your personal github organization
-
-## 7)  Setup HA Proxy to Keptn Bridge
+## 6) Manual Step: Setup Port-forward to Keptn Bridge
 
 The [keptn’s bridge](https://keptn.sh/docs/0.4.0/reference/keptnsbridge/) provides an easy way to browse all events that are sent within keptn and to filter on a specific keptn context. When you access the keptn’s bridge, all keptn entry points will be listed in the left column. Please note that this list only represents the start of a deployment of a new artifact and, thus, more information on the executed steps can be revealed when you click on one event.
 
 <img src="images/bridge-empty.png" width="500"/>
 
-The keptn’s bridge is not publicly accessible, but can be retrieved using kubernetes port-forwarding using the ```kubectl port-forward``` command.  This script will install haproxy service on the bastion host, configure it with basic authentication, listen on port 80 and forward it to kubernetes listening on port 9000.
-
-The script will output the ```kubectl port-forward``` command to run as well as the URL to open in a browser to view the Keptn Bridge.  I recommend making a second terminal window since the command runs in a continuous loop.
-
-Sample output:
+The keptn’s bridge is not publicly accessible, but can be retrieved using kubernetes port-forwarding using the ```kubectl port-forward``` command:
 
 ```
-======================================================================
-Creating new /etc/haproxy/haproxy.cfg
-Restarting haproxy
-
-======================================================================
-Start Keptn Bridge with this command:
-while true; do kubectl port-forward svc/bridge -n keptn 9000:8080; done
-
-View bridge @ http://123.123.123.123/#/
+kubectl port-forward svc/bridge -n keptn 9000:8080
 ```
 
-Recommend using a seperate SSH terminal session since the ```kubectl port-forward``` remains running.
-
+Afterwards, your keptn's bridge will be accessible via [http://localhost:9000](http://localhost:9000)
 
 
 # Onboarding the carts service
 
 Now that your environment is up and running and monitored by Dynatrace, you can proceed with onboarding the carts application into your cluster.
-To do so, please follow these instructions on your bastion host:
+To do so, please follow these instructions on your machine:
 
 1. Change into the `keptn-onboarding` directory:
 
@@ -215,7 +185,7 @@ Now, your configuration repository contains all the information needed to deploy
 
 # Deploying the carts service
 
-To deploy the service into your cluster, you can use the keptn CLI to trigger a new deployment. To do so, please execute the following command on your bastion host:
+To deploy the service into your cluster, you can use the keptn CLI to trigger a new deployment. To do so, please execute the following command on your machine:
 
 ```
 keptn send event new-artifact --project=sockshop --service=carts --image=docker.io/keptnexamples/carts --tag=0.8.1
@@ -253,7 +223,7 @@ After forking the `carts` repository into your organization, the `perfspec` dire
   - `perfspec_dynatrace.json`
   - `perfspec_prometheus.json`
 
-In this workshop we will be using Dynatrace to retrieve metrics. Thus, to enable the Dynatrace quality gates, please rename `perfspec_dynatrace.json` to `perfspec.json`, and commit/push your changes to the repository. To do so, either execute the following commands on your bastion host, or rename the file directly within the GitHub UI.
+In this workshop we will be using Dynatrace to retrieve metrics. Thus, to enable the Dynatrace quality gates, please rename `perfspec_dynatrace.json` to `perfspec.json`, and commit/push your changes to the repository. To do so, either execute the following commands on your machine, or rename the file directly within the GitHub UI.
 
 ```
 cd ~/respositories/carts
@@ -267,7 +237,7 @@ Now your carts service will only be promoted into production if it adheres to th
 
 # Deployment of a slow implementation of the carts service
 
-To demonstrate the benefits of having quality gates, we will now deploy a version of the carts service with a terribly slow response time. To trigger the deployment of this version, please execute the following command on your bastion host:
+To demonstrate the benefits of having quality gates, we will now deploy a version of the carts service with a terribly slow response time. To trigger the deployment of this version, please execute the following command on your machine:
 
 ```
 keptn send event new-artifact --project=sockshop --service=carts --image=docker.io/keptnexamples/carts --tag=0.8.2

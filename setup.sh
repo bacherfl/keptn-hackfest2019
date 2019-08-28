@@ -13,13 +13,10 @@ echo ""
 echo "===================================================="
 echo "SETUP MENU for $DEPLOYMENT_NAME"
 echo "===================================================="
-echo "1)  Install Prerequisites Tools"
-echo "2)  Enter Installation Script Inputs"
-echo "3)  Provision Kubernetes cluster"
-echo "4)  Install Keptn"
-echo "5)  Install Dynatrace"
-echo "6)  Fork sockshop Repos"
-echo "7)  Setup HA Proxy to Keptn Bridge"
+echo "1)  Enter Installation Script Inputs"
+echo "2)  Provision Kubernetes cluster"
+echo "3)  Install Keptn"
+echo "4)  Install Dynatrace"
 echo "----------------------------------------------------"
 echo "10) Validate Kubectl"
 echo "11) Validate Prerequisite Tools"
@@ -45,31 +42,19 @@ while [ opt != "" ]
         clear
         case $opt in
         1)
-                ./1-installPrerequisitesTools.sh $DEPLOYMENT  2>&1 | tee logs/1-installPrerequisitesTools.log
-                show_menu
-                ;;
-        2)
                 ./2-enterInstallationScriptInputs.sh $DEPLOYMENT 2>&1 | tee logs/2-enterInstallationScriptInputs.log
                 show_menu
                 ;;
-        3)
+        2)
                 ./3-provisionInfrastructure.sh $DEPLOYMENT  2>&1 | tee logs/3-provisionInfrastructure.log
                 show_menu
                 ;;
-        4)
+        3)
                 ./4-installKeptn.sh 2>&1 | tee logs/4-installKeptn.log
                 show_menu
                 ;;
-        5)
+        4)
                 ./5-installDynatrace.sh 2>&1 | tee logs/5-installDynatrace.log
-                show_menu
-                ;;
-        6)
-                ./6-forkApplicationRepositories.sh  2>&1 | tee logs/6-forkApplicationRepositories.log
-                show_menu
-                ;;
-        7)
-                ./7-setupBridgeProxy.sh  2>&1 | tee logs/8-setupBridgeProxy.log
                 show_menu
                 ;;
         10)
