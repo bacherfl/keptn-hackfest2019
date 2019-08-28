@@ -13,7 +13,6 @@ In this workshop, you will get hands-on experience with the open source framewor
 1. Cloud provider account.  Highly recommend to sign up for personal free trial as to have full admin rights and to not cause any issues with your enterprise account. Links to free trials
    * [Google](https://cloud.google.com/free/)
    * [Azure](https://azure.microsoft.com/en-us/free/)
-   * [Amazon](https://aws.amazon.com/free/)
 
 ## 2. Github Org
 
@@ -37,17 +36,11 @@ Google additional tools
 Azure additional tools
 * az - [CLI for Azure](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
-Amazon additional tools
-* ekscli - [CLI Provisioning EKS cluster](https://github.com/weaveworks/eksctl)
-* aws-iam-authenticator = [Allows kubectl client to work with Amazon EKS via IAM](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html)
-* aws - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
-
 # Bastion host setup
 
 See these instructions for provisioning an ubuntu 16.04 LTS host on the targeted cloud provider.  The setup scripts assume this version, so don't adjust this.
 * [Google Compute Engine VM](GOOGLE.md)
 * [Azure Compute Engine VM](AZURE.md)
-* [Amazon EC2 VM](AWS.md)
 
 # Provision Cluster, Install Keptn, and onboard the Orders application
 
@@ -58,7 +51,6 @@ There are multiple scripts used for the setup and they must be run in the right 
 NOTE: Valid 'deployment type' argument values are:
 * gke = Google
 * aks = Azure
-* eks = Amazon
 
 The setup menu should look like this:
 ```
