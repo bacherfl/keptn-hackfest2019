@@ -65,7 +65,7 @@ validate_deployment_argument() {
 
   # Validate Deployment argument value
   #OK=0 ; DEPLOY_TYPES="ocp eks gke aks"
-  OK=0 ; DEPLOY_TYPES="gke aks eks"
+  OK=0 ; DEPLOY_TYPES="gke aks"
   for DT in $DEPLOY_TYPES ; do [ $DEPLOYMENT == $DT ] && { OK=1 ; break; } ; done
   if [ $OK -eq 0 ]; then
     show_deployment_help

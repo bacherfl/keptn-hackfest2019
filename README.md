@@ -62,9 +62,8 @@ SETUP MENU
 3)  Provision Kubernetes cluster
 4)  Install Keptn
 5)  Install Dynatrace
-6)  Fork keptn-orders Repos
-7)  Onboard keptn-orders App to Keptn
-8)  Setup HA Proxy to Keptn Bridge
+6)  Fork sockshop Repos
+7)  Setup HA Proxy to Keptn Bridge
 ----------------------------------------------------
 10) Validate Kubectl
 11) Validate Prerequisite Tools
