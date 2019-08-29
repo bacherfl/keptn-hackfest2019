@@ -51,7 +51,8 @@ RUN apt-get update && apt-get install google-cloud-sdk -y
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
 RUN curl -sL https://get.keptn.sh | bash
-
+WORKDIR /usr/keptn
+COPY . /scripts
 # Start the app
 	
 CMD tail -f /dev/null

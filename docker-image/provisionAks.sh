@@ -127,7 +127,7 @@ echo "Create Cluster will take several minutes"
 echo ""
 
 cd aks
-sudo ./deploy.sh -i $AKS_SUBSCRIPTION_ID -g $AKS_RESOURCEGROUP -n $AKS_DEPLOYMENTNAME -l $AKS_LOCATION
+./deploy.sh -i $AKS_SUBSCRIPTION_ID -g $AKS_RESOURCEGROUP -n $AKS_DEPLOYMENTNAME -l $AKS_LOCATION
 cd ..
 
 echo "Letting cluster persist properly (10 sec) ..."
