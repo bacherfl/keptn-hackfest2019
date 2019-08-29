@@ -52,7 +52,9 @@ RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
 RUN curl -sL https://get.keptn.sh | bash
 WORKDIR /usr/keptn
-COPY . /scripts
+COPY . /usr/keptn/scripts
+
+RUN git clone https://github.com/bacherfl/keptn-hackfest2019
 # Start the app
 	
 CMD tail -f /dev/null

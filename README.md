@@ -24,17 +24,7 @@ NOTE: If the 'orders-project' repo already exists in your personal github org, t
 
 ## 3. Tools
 
-The following set of tools are required by the installation scripts and interacting with the environment.  The setup scripts will install these automatically on the machine, but below is a listing for reference.
-
-All platforms
-* keptn -[Keptn CLI to manage Keptn projects](https://keptn.sh/docs/0.4.0/reference/cli/)
-* kubectl - [CLI to manage the cluster](https://kubernetes.io/docs/tasks/tools/install-kubectl). This is required for all, but will use the installation instructions per each cloud provider
-
-Google additional tools
-* gcloud - [CLI for Google Cloud](https://cloud.google.com/sdk/gcloud/)
-
-Azure additional tools
-* az - [CLI for Azure](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+In this workshop we are going to use a pre-built Docker image that already has the required tools installed. The only requirement is that you have Docker installed on your machine. You can install it using the instructions on the [Docker Homepage](https://docs.docker.com/install/)
 
 # Provision Cluster, Install Keptn, and onboard the Carts application
 
@@ -48,91 +38,146 @@ GitHub User Name:
 GitHub Personal Access Token:
 GitHub User Email:
 GitHub Organization:
+========Azure Only=========
+Azure Subscription ID:
+Azure Location: germanywestcentral
+========GKE Only===========
+Google Project:
+Google Cluster Zone: us-east1-b
+Google Cluster Region: us-east1
 ```
 
-## 1 Provision Kubernetes cluster
+The **Azure Subscription ID** can be found in your [Azure console](https://portal.azure.com/?quickstart=true#blade/Microsoft_Azure_Billing/SubscriptionsBlade)
 
-- On GCP, you can create the cluster using the following command:
-  ```
-  gcloud beta container --project $PROJECT clusters create $CLUSTER_NAME --zone $ZONE --no-enable-basic-auth --cluster-version $GKE_VERSION --machine-type "n1-standard-4" --image-type "UBUNTU" --disk-type "pd-standard" --disk-size "100" --metadata disable-legacy-endpoints=true --scopes "https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/service.management.readonly","https://www.googleapis.com/auth/trace.append" --num-nodes "1" --enable-cloud-logging --enable-cloud-monitoring --no-enable-ip-alias --network "projects/$PROJECT/global/networks/default" --subnetwork "projects/$PROJECT/regions/$REGION/subnetworks/default" --addons HorizontalPodAutoscaling,HttpLoadBalancing --no-enable-autoupgrade
-  ```
-- On Azure, please follow the instructions at the [Azure AKS Docs](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal). For the cluster size, select one **B4ms** node.
+The **Google Project** can be found at the top bar of your [GCP Console](https://console.cloud.google.com)
 
+
+To start the docker container you will use for this workshop, please execute:
+
+```
+docker run -d -t bacherfl/keptn-demo
+```
+
+Afterwards, you can SSH into this container. First, retrieve the `CONTAINER_ID` of the `keptn-demo` container:
+
+```
+docker ps
+```
+
+Then, use that ID to SSH into the container:
+
+```
+docker exec -it <CONTAINER_ID> /bin/bash
+```
+
+When you are in the container, you need to log in to your PaaS account (GCP or AKS):
+
+  - If you are using **GCP**, execute `gcloud init`
+  - On **Azure**, execute `az login`
+
+when is is done, navigate into the `scripts` folder:
+
+```
+cd scripts
+```
+
+Here you will find multiple scripts used for the setup and they must be run the right order.  Just run the setup script that will prompt you with menu choices.
+```
+./setup.sh <deployment type>
+```
+NOTE: Valid 'deployment type' argument values are:
+* gke = Google
+* aks = Azure
+
+The setup menu should look like this:
+```
+====================================================
+SETUP MENU for Azure AKS
+====================================================
+1)  Enter Installation Script Inputs
+2)  Provision Kubernetes cluster
+3)  Install Keptn
+4)  Install Dynatrace
+----------------------------------------------------
+99) Delete Kubernetes cluster
+====================================================
+Please enter your choice or <q> or <return> to exit
+```
+
+## 1) Enter Installation Script Inputs
+
+Before you do this step, be prepared with your github credentials, dynatrace tokens, and cloud provider project information available.
+
+This will prompt you for values that are referenced in the remaining setup scripts. Inputted values are stored in ```creds.json``` file. For example on GKE the menus looks like:
+
+```
+===================================================================
+Please enter the values for provider type: Google GKE:
+===================================================================
+Dynatrace Host Name (e.g. abc12345.live.dynatrace.com)
+                                       (current: DYNATRACE_HOSTNAME_PLACEHOLDER) : 
+Dynatrace API Token                    (current: DYNATRACE_API_TOKEN_PLACEHOLDER) : 
+Dynatrace PaaS Token                   (current: DYNATRACE_PAAS_TOKEN_PLACEHOLDER) : 
+GitHub User Name                       (current: GITHUB_USER_NAME_PLACEHOLDER) : 
+GitHub Personal Access Token           (current: PERSONAL_ACCESS_TOKEN_PLACEHOLDER) : 
+GitHub User Email                      (current: GITHUB_USER_EMAIL_PLACEHOLDER) : 
+GitHub Organization                    (current: GITHUB_ORG_PLACEHOLDER) : 
+Google Project                         (current: GKE_PROJECT_PLACEHOLDER) : 
+Cluster Name                           (current: CLUSTER_NAME_PLACEHOLDER) : 
+Cluster Zone (eg.us-east1-b)           (current: CLUSTER_ZONE_PLACEHOLDER) : 
+Cluster Region (eg.us-east1)           (current: CLUSTER_REGION_PLACEHOLDER) :
+```
+
+## 2) Provision Kubernetes cluster
+
+This will provision a Cluster on the specified cloud deployment type using the platforms CLI. This script will take several minutes to run and you can verify the cluster was created with the the cloud provider console.
 
 The cluster will take 5-10 minutes to provision.
 
+This script at the end will run the 'Validate Kubectl' script.  
+
 ## 2) Install Keptn
 
-Please ensure that you are connected to your cluster with your `kubectl` CLI, e.g. by entering `kubectl get namespaces`. This command should complete successfully and return something like this output:
+This will install the Keptn control plane components into your cluster.  The install will take 5-10 minutes to perform.
 
-```
-NAME                  STATUS   AGE
-default               Active   24h
-```
+NOTE: Internally, this script will perform the following:
+1. clone https://github.com/keptn/installer.  This repo has the cred.sav templates for building a creds.json file that the keptn CLI can use as an argument
+1. use the values we already captured in the ```2-enterInstallationScriptInputs.sh``` script to create the creds.json file
+1. run the ```keptn install -c=creds.json --platform=<Cluster>``` 
+1. run the 'Show Keptn' helper script
 
-To install keptn on your cluster, please execute the following command on your machine:
-
-`keptn install --platform=<gke|aks>`
-
-Afterwards, the Keptn CLI will ask you for the required installation details and deploy Keptn on your cluster. If you encounter any errors during the setup, please contact the instructor.
 
 ## 3) Install Dynatrace
+This will install the Dynatrace OneAgent Operator into your cluster.  The install will take 3-5 minutes to perform.
 
-To install Dynatrace on your cluster, please execute the following steps:
+NOTE: Internally, this script will perform the following:
+1. clone https://github.com/keptn/dynatrace-service.  This repo has scripts for each platform to install the Dyntrace OneAgent Operator and the cred_dt.sav template for building a creds_dt.json file that the install script expects to read
+1. use the values we already captured in the ```1-enterInstallationScriptInputs.sh``` script to create the creds_dt.json file
+1. run the ```/deploy/scripts/deployDynatraceOn<Platform>.sh``` script in the dynatrace-service folder
+1. run the 'Show Dynatrace' helper script
 
-```
-git clone --branch 0.2.0 https://github.com/keptn/dynatrace-service --single-branch
-cd dynatrace-service/deploy/scripts
-./defineDynatraceCredentials.sh
-```
 
-When the script asks for your Dynatrace tenant, please enter your tenant according to the following pattern: `{your-environment-id}.live.dynatrace.com`
-
-Afterwards, start the installation of Dynatrace by executing the installation scripts for your Kubernetes platform (GKE or AKS)
-
-```
-./deployDynatraceOnGKE.sh
-```
-or
-```
-./deployDynatraceOnAKS.sh
-```
-
-The installation will take 3-5 minutes. Afterwards, you should see the Dynatrace OneAgent Pods in your cluster by entering:
-
-```
-kubectl get pods -n dynatrace
-```
-
-## 4) Fork carts application repository
-
-Go to https://github.com/keptn-sockshop/carts and click on the **Fork** button on the top right corner.
-  1. Select the GitHub organization you use for keptn.
-  1. Clone the forked carts service to your local machine. Please note that you have to use your own GitHub organization.
-  
-    ```console
-      git clone https://github.com/your-github-org/carts.git
-    ```
-
-## 6) Setup Port-forward to Keptn Bridge
-
-The [keptn’s bridge](https://keptn.sh/docs/0.4.0/reference/keptnsbridge/) provides an easy way to browse all events that are sent within keptn and to filter on a specific keptn context. When you access the keptn’s bridge, all keptn entry points will be listed in the left column. Please note that this list only represents the start of a deployment of a new artifact and, thus, more information on the executed steps can be revealed when you click on one event.
-
-<img src="images/bridge-empty.png" width="500"/>
-
-The keptn’s bridge is not publicly accessible, but can be retrieved using kubernetes port-forwarding using the ```kubectl port-forward``` command:
-
-```
-kubectl port-forward svc/bridge -n keptn 9000:8080
-```
-
-Afterwards, your keptn's bridge will be accessible via [http://localhost:9000](http://localhost:9000)
+## 4) TODO: Setup Keptn Bridge
 
 
 # Onboarding the carts service
 
 Now that your environment is up and running and monitored by Dynatrace, you can proceed with onboarding the carts application into your cluster.
-To do so, please follow these instructions on your machine:
+To do so, please follow these instructions:
+
+  1. Quit the setup script you were using to setup the infrastructure.
+  1. Navigate to the workshop directory:
+    ```
+    cd /usr/keptn/keptn-hackfest2019
+    ```
+  1. Go to https://github.com/keptn-sockshop/carts and click on the **Fork** button on the top right corner.
+    1. Select the GitHub organization you use for keptn.
+    1. Clone the forked carts service to your local machine. Please note that you have to use your own GitHub organization.
+  
+      ```console
+        git clone https://github.com/your-github-org/carts.git
+      ```
+
 
 1. Change into the `keptn-onboarding` directory:
 
