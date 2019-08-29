@@ -5,7 +5,7 @@ AKS_SUBSCRIPTION_ID=$(cat creds.json | jq -r '.aksSubscriptionId')
 AKS_LOCATION=$(cat creds.json | jq -r '.aksLocation')
 RESOURCE_PREFIX=$(cat creds.json | jq -r '.resourcePrefix')
 AKS_VERSION=1.12.8
-AKS_NODE_SIZE=Standard_B8ms
+AKS_NODE_SIZE=Standard_B4ms
 
 # derived values
 CLUSTER_NAME="$RESOURCE_PREFIX"-keptn-orders-cluster
