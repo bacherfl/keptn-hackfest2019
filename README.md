@@ -63,11 +63,18 @@ The cluster will take 5-10 minutes to provision.
 
 ## 2) Install Keptn
 
+Please ensure that you are connected to your cluster with your `kubectl` CLI, e.g. by entering `kubectl get namespaces`. This command should complete successfully and return something like this output:
+
+```
+NAME                  STATUS   AGE
+default               Active   24h
+```
+
 To install keptn on your cluster, please execute the following command on your machine:
 
 `keptn install --platform=<gke|aks>`
 
-This will install keptn on your cluster, using the installation details you provided earlier.
+Afterwards, the Keptn CLI will ask you for the required installation details and deploy Keptn on your cluster. If you encounter any errors during the setup, please contact the instructor.
 
 ## 3) Install Dynatrace
 
@@ -89,6 +96,12 @@ Afterwards, start the installation of Dynatrace by executing the installation sc
 or
 ```
 ./deployDynatraceOnAKS.sh
+```
+
+The installation will take 3-5 minutes. Afterwards, you should see the Dynatrace OneAgent Pods in your cluster by entering:
+
+```
+kubectl get pods -n dynatrace
 ```
 
 ## 4) Fork carts application repository
