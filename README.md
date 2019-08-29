@@ -98,6 +98,7 @@ SETUP MENU for Azure AKS
 2)  Provision Kubernetes cluster
 3)  Install Keptn
 4)  Install Dynatrace
+5)  Expose Keptn's Bridge
 ----------------------------------------------------
 99) Delete Kubernetes cluster
 ====================================================
@@ -136,7 +137,7 @@ The cluster will take 5-10 minutes to provision.
 
 This script at the end will run the 'Validate Kubectl' script.  
 
-## 2) Install Keptn
+## 3) Install Keptn
 
 This will install the Keptn control plane components into your cluster.  The install will take 5-10 minutes to perform.
 
@@ -147,7 +148,7 @@ NOTE: Internally, this script will perform the following:
 1. run the 'Show Keptn' helper script
 
 
-## 3) Install Dynatrace
+## 4) Install Dynatrace
 This will install the Dynatrace OneAgent Operator into your cluster.  The install will take 3-5 minutes to perform.
 
 NOTE: Internally, this script will perform the following:
@@ -157,8 +158,13 @@ NOTE: Internally, this script will perform the following:
 1. run the 'Show Dynatrace' helper script
 
 
-## 4) TODO: Setup Keptn Bridge
+## 5)  Expose Keptn's Bridge
 
+The [keptn’s bridge](https://keptn.sh/docs/0.4.0/reference/keptnsbridge/) provides an easy way to browse all events that are sent within keptn and to filter on a specific keptn context. When you access the keptn’s bridge, all keptn entry points will be listed in the left column. Please note that this list only represents the start of a deployment of a new artifact and, thus, more information on the executed steps can be revealed when you click on one event.
+
+<img src="images/bridge-empty.png" width="500"/>
+
+In the default installation of Keptn, the bridge is only accessible via `kubectl port-forward`. To make things easier for workshop participants, we will expose it by creating a oublic URL for this component.
 
 # Onboarding the carts service
 
