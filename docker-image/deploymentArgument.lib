@@ -1,0 +1,86 @@
+################################################################
+# This is shared library
+################################################################
+
+get_deployment_name()
+{
+  case $1 in
+    aks)
+      DEPLOYMENT_NAME="Azure AKS"
+      ;;
+    eks)
+      DEPLOYMENT_NAME="AWS EKS"
+      ;;
+    ocp)
+      DEPLOYMENT_NAME="OpenShift on Google GKE"
+      ;;
+    gke)
+      DEPLOYMENT_NAME="Google GKE"
+      ;;
+    *)
+      DEPLOYMENT_NAME=$1
+      ;;
+  esac
+}
+
+show_deployment_help()
+{
+  echo ""
+  echo "============================================="
+  echo "Missing or Invalid 'deployment type' argument. "
+  echo "Valid 'deployment types' are:"
+  echo ""
+  echo "eks = AWS"
+  #echo "ocp = Open Shift"
+  echo "aks = Azure"
+  echo "gke = Google" 
+  echo "=============================================" 
+  echo ""
+  exit 1
+}
+
+validate_deployment_argument() {
+  # Validate passed in an argument.  
+  # If don't pass is in then attempt to look for value in creds.json
+  if [ -z $1 ]; then
+    # if jq not installed, then can not parse file so show the help
+    # if it is, then look for value in creds.json
+    command -v jq &> /dev/null
+    if [ $? -ne 0 ]; then
+      show_deployment_help
+    else
+      if [ -f creds.json ]; then
+        DEPLOYMENT=$(cat creds.json | jq -r '.deployment')
+        if [ -z "$DEPLOYMENT" ]
+        then
+          show_deployment_help
+        fi
+      else
+        show_deployment_help
+      fi
+    fi
+  else
+    DEPLOYMENT=$1
+  fi
+
+  # Validate Deployment argument value
+  #OK=0 ; DEPLOY_TYPES="ocp eks gke aks"
+  OK=0 ; DEPLOY_TYPES="gke aks eks"
+  for DT in $DEPLOY_TYPES ; do [ $DEPLOYMENT == $DT ] && { OK=1 ; break; } ; done
+  if [ $OK -eq 0 ]; then
+    show_deployment_help
+  fi
+
+  # ths will store name into the DEPLOYMENT_NAME variable
+  get_deployment_name $DEPLOYMENT
+
+  # this will make a creds.json if it does not exist using a copy of creds.sav template
+  # then is updates the creds.json file with new deployment value
+  if [ -f ./creds.json ]; then
+    cp ./creds.json ./creds.json.bak 2> /dev/null
+  else
+    cp ./creds.sav ./creds.json.bak 2> /dev/null
+  fi
+  cat creds.json.bak | \
+      sed -e 's/"deployment": ".*/"deployment": "'$DEPLOYMENT'",/g' > creds.json
+}
