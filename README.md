@@ -36,67 +36,21 @@ Google additional tools
 Azure additional tools
 * az - [CLI for Azure](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
-# Provision Cluster, Install Keptn, and onboard the Orders application
+# Provision Cluster, Install Keptn, and onboard the Carts application
 
-There are multiple scripts used for the setup and they must be run in the right order.  Just run the setup script that will prompt you with menu choices.
-```
-./setup.sh <deployment type>
-```
-NOTE: Valid 'deployment type' argument values are:
-* gke = Google
-* aks = Azure
-
-The setup menu should look like this:
-```
-====================================================
-SETUP MENU
-====================================================
-1)  Enter Installation Script Inputs
-2)  Provision Kubernetes cluster
-3)  Install Keptn
-4)  Install Dynatrace
-----------------------------------------------------
-10) Validate Kubectl
-11) Validate Prerequisite Tools
-----------------------------------------------------
-21) Show Keptn
-22) Show Dynatrace
-----------------------------------------------------
-30) Send Keptn Artifact Events
-----------------------------------------------------
-99) Delete Kubernetes cluster
-====================================================
-Please enter your choice or <q> or <return> to exit
+Now it's time to set up your workshop environment. During the setup, you will need the following values. We recommend to copy the following lines into an editor, fill them out and keep them as a reference for later:
 
 ```
-
-NOTE: each script will log the console output into the ```logs/``` subfolder.
-
-# 1) Enter Installation Script Inputs
-
-Before you do this step, be prepared with your github credentials, dynatrace tokens, and cloud provider project information available.
-
-This will prompt you for values that are referenced in the remaining setup scripts. Inputted values are stored in ```creds.json``` file. For example on GKE the menus looks like:
-
-```
-===================================================================
-Please enter the values for provider type: Google GKE:
-===================================================================
-Dynatrace Host Name (e.g. abc12345.live.dynatrace.com)
-                                       (current: DYNATRACE_HOSTNAME_PLACEHOLDER) : 
-Dynatrace API Token                    (current: DYNATRACE_API_TOKEN_PLACEHOLDER) : 
-Dynatrace PaaS Token                   (current: DYNATRACE_PAAS_TOKEN_PLACEHOLDER) : 
-GitHub User Name                       (current: GITHUB_USER_NAME_PLACEHOLDER) : 
-GitHub Personal Access Token           (current: PERSONAL_ACCESS_TOKEN_PLACEHOLDER) : 
-GitHub User Email                      (current: GITHUB_USER_EMAIL_PLACEHOLDER) : 
-GitHub Organization                    (current: GITHUB_ORG_PLACEHOLDER) : 
-Google Project                         (current: GKE_PROJECT_PLACEHOLDER) : 
-Cluster Name                           (current: CLUSTER_NAME_PLACEHOLDER) : 
-Cluster Zone (eg.us-east1-b)           (current: CLUSTER_ZONE_PLACEHOLDER) : 
-Cluster Region (eg.us-east1)           (current: CLUSTER_REGION_PLACEHOLDER) :
+Dynatrace Host Name (e.g. abc12345.live.dynatrace.com):
+Dynatrace API Token:
+Dynatrace PaaS Token:
+GitHub User Name:
+GitHub Personal Access Token:
+GitHub User Email:
+GitHub Organization:
 ```
 
-## 2 Provision Kubernetes cluster
+## 1 Provision Kubernetes cluster
 
 - On GCP, you can create the cluster using the following command:
   ```
@@ -107,25 +61,37 @@ Cluster Region (eg.us-east1)           (current: CLUSTER_REGION_PLACEHOLDER) :
 
 The cluster will take 5-10 minutes to provision.
 
-## 3) Manual Step: Install Keptn
+## 2) Install Keptn
 
 To install keptn on your cluster, please execute the following command on your machine:
 
-`keptn install -c=creds.json --platform=<deployment_type>`
+`keptn install --platform=<gke|aks>`
 
 This will install keptn on your cluster, using the installation details you provided earlier.
 
-## 4) Install Dynatrace
+## 3) Install Dynatrace
 
-This will install the Dynatrace OneAgent Operator into your cluster.  The install will take 3-5 minutes to perform.
+To install Dynatrace on your cluster, please execute the following steps:
 
-NOTE: Internally, this script will perform the following:
-1. clone https://github.com/keptn/dynatrace-service.  This repo has scripts for each platform to install the Dyntrace OneAgent Operator and the cred_dt.sav template for building a creds_dt.json file that the install script expects to read
-1. use the values we already captured in the ```2-enterInstallationScriptInputs.sh``` script to create the creds_dt.json file
-1. run the ```/deploy/scripts/deployDynatraceOn<Platform>.sh``` script in the dynatrace-service folder
-1. run the 'Show Dynatrace' helper script
+```
+git clone --branch 0.2.0 https://github.com/keptn/dynatrace-service --single-branch
+cd dynatrace-service/deploy/scripts
+./defineDynatraceCredentials.sh
+```
 
-## 5) Manual Step: Fork carts application repository
+When the script asks for your Dynatrace tenant, please enter your tenant according to the following pattern: `{your-environment-id}.live.dynatrace.com`
+
+Afterwards, start the installation of Dynatrace by executing the installation scripts for your Kubernetes platform (GKE or AKS)
+
+```
+./deployDynatraceOnGKE.sh
+```
+or
+```
+./deployDynatraceOnAKS.sh
+```
+
+## 4) Fork carts application repository
 
 Go to https://github.com/keptn-sockshop/carts and click on the **Fork** button on the top right corner.
   1. Select the GitHub organization you use for keptn.
@@ -135,7 +101,7 @@ Go to https://github.com/keptn-sockshop/carts and click on the **Fork** button o
       git clone https://github.com/your-github-org/carts.git
     ```
 
-## 6) Manual Step: Setup Port-forward to Keptn Bridge
+## 6) Setup Port-forward to Keptn Bridge
 
 The [keptn’s bridge](https://keptn.sh/docs/0.4.0/reference/keptnsbridge/) provides an easy way to browse all events that are sent within keptn and to filter on a specific keptn context. When you access the keptn’s bridge, all keptn entry points will be listed in the left column. Please note that this list only represents the start of a deployment of a new artifact and, thus, more information on the executed steps can be revealed when you click on one event.
 
@@ -235,7 +201,7 @@ git push
 
 Now your carts service will only be promoted into production if it adheres to the quality gates (response time < 1s) specified in the `perfspec.json` file.
 
-# Deployment of a slow implementation of the carts service
+## Deployment of a slow implementation of the carts service
 
 To demonstrate the benefits of having quality gates, we will now deploy a version of the carts service with a terribly slow response time. To trigger the deployment of this version, please execute the following command on your machine:
 
