@@ -174,9 +174,9 @@ To do so, please follow these instructions:
 1. Quit the setup script you were using to setup the infrastructure.
 1. Navigate to the workshop directory:
 
-```
-cd /usr/keptn/keptn-hackfest2019
-```
+  ```
+  cd /usr/keptn/keptn-hackfest2019
+  ```
 1. Go to https://github.com/keptn-sockshop/carts and click on the **Fork** button on the top right corner.
 
   1. Select the GitHub organization you use for keptn.
