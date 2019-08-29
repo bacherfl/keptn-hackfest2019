@@ -180,9 +180,10 @@ To do so, please follow these instructions:
   1. Go to https://github.com/keptn-sockshop/carts and click on the **Fork** button on the top right corner.
 
     1. Select the GitHub organization you use for keptn.
+
     1. Clone the forked carts service to your local machine. Please note that you have to use your own GitHub organization.
   
-    ```console
+    ```
       git clone https://github.com/your-github-org/carts.git
     ```
 
