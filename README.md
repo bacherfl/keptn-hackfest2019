@@ -40,7 +40,7 @@ GitHub User Email:
 GitHub Organization:
 ========Azure Only=========
 Azure Subscription ID:
-Azure Location: germanywestcentral
+Azure Location: francecentral
 ========GKE Only===========
 Google Project:
 Google Cluster Zone: us-east1-b
@@ -67,7 +67,7 @@ docker ps
 Then, use that ID to SSH into the container:
 
 ```
-docker exec -it <CONTAINER_ID> /bin/bash
+docker exec -it <CONTAINER_ID> /bin/sh -c "[ -e /bin/bash ] && /bin/bash || /bin/sh"
 ```
 
 When you are in the container, you need to log in to your PaaS account (GCP or AKS):

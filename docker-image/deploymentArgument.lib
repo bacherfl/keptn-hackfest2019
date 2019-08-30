@@ -30,7 +30,7 @@ show_deployment_help()
   echo "Missing or Invalid 'deployment type' argument. "
   echo "Valid 'deployment types' are:"
   echo ""
-  echo "eks = AWS"
+  #echo "eks = AWS"
   #echo "ocp = Open Shift"
   echo "aks = Azure"
   echo "gke = Google" 
