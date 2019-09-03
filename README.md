@@ -47,9 +47,13 @@ Google Cluster Zone: us-east1-b
 Google Cluster Region: us-east1
 ```
 
-The **Azure Subscription ID** can be found in your [Azure console](https://portal.azure.com/?quickstart=true#blade/Microsoft_Azure_Billing/SubscriptionsBlade)
+The **Azure Subscription ID** can be found in your [Azure console](https://portal.azure.com/?quickstart=true#blade/Microsoft_Azure_Billing/SubscriptionsBlade):
 
-The **Google Project** can be found at the top bar of your [GCP Console](https://console.cloud.google.com)
+<img src="images/azure_subscription.png" width="500"/>
+
+The **Google Project** can be found at the top bar of your [GCP Console](https://console.cloud.google.com):
+
+<img src="images/gcloud_project.png" width="500"/>
 
 
 To start the docker container you will use for this workshop, please execute:
